@@ -16,7 +16,6 @@ export const getGlobalItem = (key: string) => {
   return null;
 };
 
-
 export const setGlobalItem = (key: any, value: any) => {
   if (typeof window !== "undefined") {
     localStorage.setItem(key, JSON.stringify(value));
@@ -31,12 +30,16 @@ export const clearGlobalItem = () => {
 
 export const messageTemplateFormatter = (text: string, sentBy: User) => {
   const message: ChatMessage = {
-        id: uuid(),
-        like: null,
-        message: text,
-        sentBy,
-        timestamp: Date.now().toString(),
+    id: uuid(),
+    like: null,
+    message: text,
+    sentBy,
+    timestamp: Date.now().toString(),
   };
-  
+
   return message;
-}
+};
+  
+export const round5 = (x: number) => {
+  return Math.ceil(x / 5) * 5;
+};

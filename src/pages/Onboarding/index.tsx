@@ -54,14 +54,10 @@ const Onboarding: React.FC = () => {
   };
 
   useLayoutEffect(() => {
-    // console.log("Token changed:", context?.token); // Debugging log
-
     if (context?.token) {
       navigate("/chat", { replace: true });
     }
   }, [context, navigate]);
-
-  console.log("ONBOARDING PAGE", context?.token);
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen md:min-h-auto h-full bg-blue-gradient">
