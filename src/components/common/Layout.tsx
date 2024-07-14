@@ -13,8 +13,8 @@ const Layout = () => {
   };
 
   return (
-    <div className="flex w-full">
-      <nav className="bg-gray-100 w-full max-w-[280px] h-screen hide-scrollbar flex flex-col justify-between border-r-[1px] border-gray-300">
+    <div className="flex w-screen">
+      <nav className="bg-gray-100 w-[280px] shrink-0 h-screen flex flex-col justify-between border-r-[1px] border-gray-300">
         <div className="max-h-full break-words p-4 overflow-y-auto overflow-x-clip custom-scrollbar">
           {/* {"Sunny ".repeat(1000000)} */}
         </div>
@@ -28,7 +28,7 @@ const Layout = () => {
         </div>
       </nav>
 
-      <div className="bg-gray-50 w-full">
+      <div className="bg-gray-50 w-full h-screen overflow-y-auto overflow-clip custom-scrollbar">
         <Outlet />
       </div>
     </div>
