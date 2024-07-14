@@ -1,10 +1,10 @@
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../components/store/store";
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { ChatMessage } from "../../types/types";
+import { Chat as ChatTopic, ChatMessage } from "../../types/types";
 import { v4 as uuid } from "uuid";
 import { User } from "../../types/enum";
 import { addMessageToChatId } from "../../components/features/chat/chatSlice";
@@ -17,6 +17,9 @@ const Chat = () => {
   const { data } = useSelector((state: RootState) => state.chat);
   const defaultFormData = { userMessage: "" };
   const [formData, setFormData] = useState(defaultFormData);
+
+  console.log("CHAT PAGE");
+  
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -55,8 +58,8 @@ const Chat = () => {
       <div className="max-h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black">
         <div className="max-w-[50vw] mx-auto flex flex-col gap-3">
           {data
-            .find((el) => el.id === pathParams.chatId)
-            ?.messages.map(({ id, sentBy, like, message }) => (
+            .find((el: ChatTopic) => el.id === pathParams.chatId)
+            ?.messages.map(({ id, sentBy, like, message }: ChatMessage) => (
               <React.Fragment key={id}>
                 {sentBy === User.AI ? (
                   <ReceiverMessage like={like} message={message} />

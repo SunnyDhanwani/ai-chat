@@ -10,7 +10,7 @@ interface ChatIdTileProps {
 }
 
 const ChatIdTile = ({
-  id="",
+  id = "",
   initialMessage = "",
   isNewChatTile = false,
 }: ChatIdTileProps) => {
@@ -26,14 +26,14 @@ const ChatIdTile = ({
   return (
     <div
       onClick={handleClick}
-      className={`cursor-pointer rounded-md px-2 py-3 ${
+      className={`cursor-pointer rounded-md ${
         isNewChatTile
-          ? "flex justify-center items-center gap-3 bg-blue-500 hover:bg-blue-600 font-bold text-white"
-          : "bg-gray-300 hover:bg-gray-200"
+          ? "flex justify-center items-center gap-3 py-2 px-3 bg-blue-500 hover:bg-blue-600 font-bold text-white"
+          : "bg-gray-300 hover:bg-gray-200 p-3"
       }`}
     >
       {isNewChatTile && <FaPen />}
-      {initialMessage}
+      <div className="line-clamp-2">{initialMessage}</div>
     </div>
   );
 };
