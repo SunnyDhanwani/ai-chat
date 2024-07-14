@@ -1,0 +1,22 @@
+.starRating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: lightgray;
+  transition: color 0.2s;
+}
+
+.star.selected {
+  @apply text-blue-700;
+}
+
+.star:hover {
+  @apply text-blue-700;
+}

@@ -1,10 +1,15 @@
 import React from "react";
+import SenderMessage from "./SenderMessage";
+import ReceiverMessage from "./ReceiverMessage";
 
 const Chat = () => {
   return (
     <div className="p-4 pr-0 h-full max-w-full flex flex-col justify-between">
       <div className="max-h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black">
-        <div className="max-w-[50vw] mx-auto">{"sunny ".repeat(1000000)}</div>
+        <div className="max-w-[50vw] mx-auto flex flex-col gap-3">
+          <ReceiverMessage rating={3} />
+          <SenderMessage />
+        </div>
       </div>
       <div className="max-w-[50vw] w-full mx-auto pr-4">
         <div className="flex gap-4">

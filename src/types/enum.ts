@@ -1,3 +1,4 @@
-export enum DUMMY {
-  "DUMMY" = "dummy"
+export enum Like {
+  LIKE = "like",
+  DISLIKE = "dislike"
 }
