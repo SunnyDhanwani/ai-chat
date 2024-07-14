@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { getGlobalItem } from "../../utils/helper";
 
 const Root = () => {
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    setToken(getGlobalItem("authToken"));
-  }, []);
+  const [token, setToken] = useState(getGlobalItem("authToken"));
 
   return (
     <div>

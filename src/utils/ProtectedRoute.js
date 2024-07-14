@@ -1,7 +1,7 @@
 import { useOutletContext, Outlet, Navigate } from "react-router-dom";
 import Layout from "../components/common/Layout";
 
-const ProtectedRoute = ({ role }) => {
+const ProtectedRoute = () => {
   const context = useOutletContext();
 
   if (!context || !context.token) {

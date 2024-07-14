@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import style from "./StarRating.module.css";
 
 const StarRating = ({ defaultRating = 0 }) => {

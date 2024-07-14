@@ -1,3 +1,7 @@
+import { User } from "../types/enum";
+import { ChatMessage } from "../types/types";
+import { v4 as uuid } from "uuid";
+
 export const getGlobalItem = (key: string) => {
   if (typeof window !== "undefined") {
     const value = localStorage.getItem(key);
@@ -24,3 +28,15 @@ export const clearGlobalItem = () => {
     localStorage.clear();
   }
 };
+
+export const messageTemplateFormatter = (text: string, sentBy: User) => {
+  const message: ChatMessage = {
+        id: uuid(),
+        like: null,
+        message: text,
+        sentBy,
+        timestamp: Date.now().toString(),
+  };
+  
+  return message;
+}

@@ -14,10 +14,14 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Onboarding /> },
       {
-        element: <ProtectedRoute role="user" />,
+        element: <ProtectedRoute />,
         children: [
           {
             path: "/chat",
+            element: <Chat />,
+          },
+          {
+            path: "/chat/:chatId",
             element: <Chat />,
           },
         ],

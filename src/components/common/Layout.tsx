@@ -1,11 +1,13 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useOutletContext } from "react-router-dom";
-import { AppDispatch } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import { logout } from "../features/auth/authSlice";
+import ChatIdTile from "./ChatIdTile";
 
 const Layout = () => {
   const context: any = useOutletContext();
   const dispatch = useDispatch<AppDispatch>();
+  const { data } = useSelector((state: RootState) => state.chat);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -15,8 +17,15 @@ const Layout = () => {
   return (
     <div className="flex w-screen">
       <nav className="bg-gray-100 w-[280px] shrink-0 h-screen flex flex-col justify-between border-r-[1px] border-gray-300">
-        <div className="max-h-full break-words p-4 overflow-y-auto overflow-x-clip custom-scrollbar">
-          {/* {"Sunny ".repeat(1000000)} */}
+        <div className="max-h-full break-words p-4 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
+          {data.map((el) => (
+            <ChatIdTile id={el.id} initialMessage={el.messages[0].message} />
+          ))}
+          <ChatIdTile
+            id={""}
+            initialMessage={"New Chat"}
+            isNewChatTile={true}
+          />
         </div>
         <div className="p-4">
           <button

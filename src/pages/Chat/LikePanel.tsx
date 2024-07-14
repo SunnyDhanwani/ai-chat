@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import style from "./LikePanel.module.css";
 import { Like } from "../../types/enum";
 import {
   FaRegThumbsDown,

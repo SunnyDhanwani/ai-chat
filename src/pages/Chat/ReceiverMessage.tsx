@@ -3,10 +3,11 @@ import LikePanel from "./LikePanel";
 import { Like } from "../../types/enum";
 
 interface ReceiverMessageProps {
-  rating: number | null;
+    like: Like | null;
+    message: string;
 }
 
-const ReceiverMessage = ({ rating = 0 }: ReceiverMessageProps) => {
+const ReceiverMessage = ({ like = null, message= "" }: ReceiverMessageProps) => {
   const [showActionButtons, setShowActionButtons] = useState(false);
 
   const handleMouseOver = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -24,13 +25,13 @@ const ReceiverMessage = ({ rating = 0 }: ReceiverMessageProps) => {
       onMouseOver={handleMouseOver}
     >
       <div className="w-full bg-gray-200 rounded-t-xl rounded-r-xl py-3 px-4 overflow-visible">
-        Receiver Message
+        {message}
       </div>
       {showActionButtons ? (
         <div className="absolute -top-1 left-2">
           <LikePanel like={Like.LIKE} />
         </div>
-      ) : rating !== null && rating > 0 ? (
+      ) : like !== null ? (
         <div className="absolute -top-1 left-2">
           <LikePanel like={Like.DISLIKE} showOnlyActiveAction={true} />
         </div>
