@@ -24,7 +24,7 @@ const ReceiverMessage = ({ like = null, message= "" }: ReceiverMessageProps) => 
       onMouseOut={handleMouseOut}
       onMouseOver={handleMouseOver}
     >
-      <div className="w-full bg-gray-200 rounded-t-xl rounded-r-xl py-3 px-4 overflow-visible">
+      <div className="w-full bg-gray-200 rounded-t-xl rounded-r-xl py-3 px-4 whitespace-pre-line">
         {message}
       </div>
       {showActionButtons ? (

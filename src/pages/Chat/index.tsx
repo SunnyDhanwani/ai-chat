@@ -115,7 +115,7 @@ const Chat = () => {
         className="max-h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black"
         ref={chatRef}
       >
-        <div className="max-w-[50vw] mx-auto flex flex-col gap-3">
+        <div className="max-w-[50vw] mx-auto flex flex-col gap-3 pb-20">
           {data
             .find((el: ChatTopic) => el.id === pathParams.chatId)
             ?.messages.map(({ id, sentBy, like, message }: ChatMessage) => (

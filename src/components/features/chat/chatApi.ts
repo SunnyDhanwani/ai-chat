@@ -9,6 +9,7 @@ import { ChatMessage, LoginUserResponse } from "../../../types/types";
 import axiosBaseQuery from "../axiosClient/axiosClient";
 import { v4 as uuid } from "uuid";
 import { User } from "../../../types/enum";
+import { formatDate } from "../../../utils/helper";
 
 const useMockResponse = true; // Toggle this to switch between real and mock data
 
@@ -26,7 +27,7 @@ export const chatFeature = createApi({
             data: {
               id: uuid(),
               like: null,
-              message: `Response for: ${query} at Time ${Date.now()}`,
+              message: `Response for: ${query}\n\n @ ${formatDate(Date.now())}`,
               sentBy: User.AI,
               timestamp: Date.now().toString(),
             } as ChatMessage,

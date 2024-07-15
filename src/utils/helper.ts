@@ -43,3 +43,24 @@ export const messageTemplateFormatter = (text: string, sentBy: User) => {
 export const round5 = (x: number) => {
   return Math.ceil(x / 5) * 5;
 };
+
+export function formatDate(timestamp: number) {
+  const date = new Date(timestamp);
+
+  const formattedDate = date.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+
+  return formattedDate;
+}
+
+// Example usage
+const timestamp = Date.now();
+console.log(formatDate(timestamp));

@@ -17,15 +17,17 @@ const Layout = () => {
   return (
     <div className="flex w-screen">
       <nav className="bg-gray-100 w-[280px] shrink-0 h-screen flex flex-col justify-between border-r-[1px] border-gray-300">
-        <div className="max-h-full break-words p-4 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
-          {data.map((el) => (
-            <ChatIdTile id={el.id} initialMessage={el.messages[0].message} />
-          ))}
+        <div className="p-4">
           <ChatIdTile
-            id={""}
+            id={"NEW_CHAT"}
             initialMessage={"New Chat"}
             isNewChatTile={true}
           />
+        </div>
+        <div className="max-h-full break-words px-4 pt-1 pb-0 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
+          {data.map((el) => (
+            <ChatIdTile id={el.id} initialMessage={el.messages[0].message} />
+          ))}
         </div>
         <div className="p-4">
           <button
