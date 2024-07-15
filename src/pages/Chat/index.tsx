@@ -14,45 +14,44 @@ import { Chat as ChatTopic, ChatMessage } from "../../types/types";
 import { v4 as uuid } from "uuid";
 import { User } from "../../types/enum";
 import { addMessageToChatId } from "../../components/features/chat/chatSlice";
-import { messageTemplateFormatter, round5 } from "../../utils/helper";
+import {
+  generateHTMLFromJSON,
+  generateTextFromJSON,
+  messageTemplateFormatter,
+  round5,
+} from "../../utils/helper";
 import { debounce } from "lodash";
 import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
 import Loader from "./Loader";
 import RichTextEditor from "./RichTextEditor";
+import { Editor, JSONContent } from "@tiptap/react";
 
 const Chat = () => {
   const pathParams = useParams();
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { data } = useSelector((state: RootState) => state.chat);
-  const defaultFormData = { userMessage: "" };
-  const [formData, setFormData] = useState(defaultFormData);
   const chatRef = useRef<HTMLDivElement>(null);
   const [showDownArrow, setShowDownArrow] = useState(false);
   const [getAssistantResponse, { isLoading }] =
     useGetAssistantResponseMutation();
-  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
-  const handleSendMessage = async (e: FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleSendMessageAPI = async (
+    userMessageJSON: JSONContent | undefined
+  ) => {
+    if (!userMessageJSON?.content) return;
 
-    if (!formData.userMessage.trim() || isLoading) return;
+    if (!userMessageJSON || !generateTextFromJSON(userMessageJSON) || isLoading)
+      return;
 
     const chatId = pathParams.chatId;
 
     if (!chatId) {
       const newChatId = uuid();
-      const newMessage = messageTemplateFormatter(
-        formData.userMessage,
-        User.USER
-      );
+      const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
       dispatch(addMessageToChatId({ message: newMessage, chatId: newChatId }));
-      setFormData(defaultFormData);
       const response = await getAssistantResponse({
-        query: formData.userMessage,
+        query: userMessageJSON,
       }).unwrap();
       dispatch(addMessageToChatId({ message: response, chatId: newChatId }));
 
@@ -61,17 +60,17 @@ const Chat = () => {
         preventScrollReset: true,
       });
     } else {
-      const newMessage = messageTemplateFormatter(
-        formData.userMessage,
-        User.USER
-      );
+      const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
       dispatch(addMessageToChatId({ message: newMessage, chatId }));
-      setFormData(defaultFormData);
       const response = await getAssistantResponse({
-        query: formData.userMessage,
+        query: userMessageJSON,
       }).unwrap();
       dispatch(addMessageToChatId({ message: response, chatId }));
     }
+  };
+
+  const handleSendEditorMessage = (editor: Editor | null) => {
+    handleSendMessageAPI(editor?.getJSON());
   };
 
   const scrollToBottom = () => {
@@ -119,15 +118,24 @@ const Chat = () => {
         <div className="max-w-[50vw] mx-auto flex flex-col gap-3 pb-20">
           {data
             .find((el: ChatTopic) => el.id === pathParams.chatId)
-            ?.messages.map(({ id, sentBy, like, message }: ChatMessage) => (
-              <React.Fragment key={id}>
-                {sentBy === User.AI ? (
-                  <ReceiverMessage like={like} message={message} />
-                ) : (
-                  <SenderMessage message={message} />
-                )}
-              </React.Fragment>
-            ))}
+            ?.messages.map(
+              ({ id, sentBy, like, message, messageJSON }: ChatMessage) => (
+                <React.Fragment key={id}>
+                  {sentBy === User.AI ? (
+                    <ReceiverMessage
+                      like={like}
+                      message={message}
+                      messageJSON={messageJSON}
+                    />
+                  ) : (
+                    <SenderMessage
+                      message={message}
+                      messageJSON={messageJSON}
+                    />
+                  )}
+                </React.Fragment>
+              )
+            )}
           {isLoading ? <Loader /> : null}
         </div>
         {showDownArrow && (
@@ -144,18 +152,11 @@ const Chat = () => {
       <div className="max-w-[50vw] w-full mx-auto pr-4">
         <div className="flex min-w-full gap-4 items-end">
           <form className="w-full relative">
-            <RichTextEditor />
-            {/* <input
-              placeholder="Message AI"
-              className="w-full py-2 px-4 rounded-md shadow-lg focus:shadow-xl outline-none focus:outline focus:outline-gray-200 border-none pr-12"
-              name="userMessage"
-              value={formData.userMessage}
-              onChange={handleChange}
-            /> */}
+            <RichTextEditor handleSubmit={handleSendEditorMessage} />
 
             <button
               type="submit"
-              onClick={handleSendMessage}
+              onClick={() => {}}
               className="absolute bottom-2 right-2"
             >
               <img

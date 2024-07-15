@@ -1,6 +1,14 @@
 import { User } from "../types/enum";
 import { ChatMessage } from "../types/types";
 import { v4 as uuid } from "uuid";
+import {
+  Editor,
+  generateHTML,
+  generateJSON,
+  generateText,
+  JSONContent,
+} from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 export const getGlobalItem = (key: string) => {
   if (typeof window !== "undefined") {
@@ -28,11 +36,12 @@ export const clearGlobalItem = () => {
   }
 };
 
-export const messageTemplateFormatter = (text: string, sentBy: User) => {
+export const messageTemplateFormatter = (json: JSONContent, sentBy: User) => {
   const message: ChatMessage = {
     id: uuid(),
     like: null,
-    message: text,
+    message: generateTextFromJSON(json),
+    messageJSON: json,
     sentBy,
     timestamp: Date.now(),
   };
@@ -61,6 +70,39 @@ export function formatDate(timestamp: number) {
   return formattedDate;
 }
 
-// Example usage
-const timestamp = Date.now();
-console.log(formatDate(timestamp));
+export function generateHTMLFromJSON(json: JSONContent | undefined): string {
+  if (!json) return "";
+
+  try {
+    const html = generateHTML(json, [StarterKit]);
+
+    return html;
+  } catch (error) {
+    console.error("Error generating HTML:", error);
+    return "";
+  }
+}
+
+export function generateJSONFromText(text: string): JSONContent {
+  try {
+    const json = generateJSON(text, [StarterKit]);
+    return json;
+  } catch (error) {
+    console.error("Error generating HTML:", error);
+    return {};
+  }
+}
+
+export function generateTextFromJSON(json: JSONContent | undefined): string {
+  const data = json;
+
+  if (!json || !data) return "";
+
+  try {
+    const text = generateText(data, [StarterKit]);
+    return text;
+  } catch (error) {
+    console.error("Error generating HTML:", error);
+    return "";
+  }
+}

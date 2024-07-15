@@ -1,21 +1,48 @@
 import Placeholder from "@tiptap/extension-placeholder";
 import "./RichTextEditor.css";
-
-import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
+import { Extension } from "@tiptap/core";
+import {
+  BubbleMenu,
+  Editor,
+  EditorContent,
+  JSONContent,
+  useEditor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { generateHTML } from "@tiptap/html";
 
-const RichTextEditor = () => {
+const RichTextEditor = ({
+  handleSubmit,
+}: {
+  handleSubmit: (data: Editor | null) => void;
+}) => {
+  const CustomExtension = Extension.create({
+    addKeyboardShortcuts() {
+      return {
+        "Cmd-Enter": () => {
+          // Handle Cmd-Enter shortcut
+          handleSubmit(editor);
+          editor?.chain().clearContent().run();
+          return true;
+        },
+        "Ctrl-Enter": () => {
+          // Handle Ctrl-Enter shortcut
+          handleSubmit(editor);
+          editor?.chain().clearContent().run();
+          return true;
+        },
+      };
+    },
+  });
+
   const editor = useEditor({
     extensions: [
       StarterKit,
       Placeholder.configure({
         placeholder: "Message SentiSum GPT",
       }),
+      CustomExtension,
     ],
   });
-
-  console.log(editor?.getHTML());
 
   return (
     <div className="w-full">
