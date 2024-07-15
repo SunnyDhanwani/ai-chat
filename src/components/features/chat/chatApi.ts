@@ -23,13 +23,14 @@ export const chatFeature = createApi({
           const promise = new Promise(resolve => setTimeout(resolve, 1000));          
           await promise;
           
+          const timestamp: number = Date.now();
           return {
             data: {
               id: uuid(),
               like: null,
-              message: `Response for: ${query}\n\n @ ${formatDate(Date.now())}`,
+              message: `Response for: ${query}\n\n @ ${formatDate(timestamp)}`,
               sentBy: User.AI,
-              timestamp: Date.now().toString(),
+              timestamp,
             } as ChatMessage,
           };
         } else {

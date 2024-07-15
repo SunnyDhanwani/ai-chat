@@ -14,7 +14,7 @@ export interface ErrorMessage {
 export interface ChatMessage {
   id: string;
   message: string;
-  timestamp: string;
+  timestamp: number;
   like: Like | null;
   sentBy: User
 }

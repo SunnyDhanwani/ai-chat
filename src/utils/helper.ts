@@ -34,12 +34,12 @@ export const messageTemplateFormatter = (text: string, sentBy: User) => {
     like: null,
     message: text,
     sentBy,
-    timestamp: Date.now().toString(),
+    timestamp: Date.now(),
   };
 
   return message;
 };
-  
+
 export const round5 = (x: number) => {
   return Math.ceil(x / 5) * 5;
 };
@@ -47,15 +47,15 @@ export const round5 = (x: number) => {
 export function formatDate(timestamp: number) {
   const date = new Date(timestamp);
 
-  const formattedDate = date.toLocaleString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
+  const formattedDate = date.toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
   });
 
   return formattedDate;
