@@ -16,6 +16,8 @@ import { User } from "../../types/enum";
 import { addMessageToChatId } from "../../components/features/chat/chatSlice";
 import { messageTemplateFormatter, round5 } from "../../utils/helper";
 import { debounce } from "lodash";
+import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
+import Loader from "./Loader";
 
 const Chat = () => {
   const pathParams = useParams();
@@ -26,16 +28,17 @@ const Chat = () => {
   const [formData, setFormData] = useState(defaultFormData);
   const chatRef = useRef<HTMLDivElement>(null);
   const [showDownArrow, setShowDownArrow] = useState(false);
-
+  const [getAssistantResponse, { isLoading, data: aiResponseData }] =
+    useGetAssistantResponseMutation();
   const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSendMessage = (e: FormEvent<HTMLButtonElement>) => {
+  const handleSendMessage = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!formData.userMessage.trim()) return;
+    if (!formData.userMessage.trim() || isLoading) return;
 
     const chatId = pathParams.chatId;
 
@@ -47,6 +50,11 @@ const Chat = () => {
       );
       dispatch(addMessageToChatId({ message: newMessage, chatId: newChatId }));
       setFormData(defaultFormData);
+      const response = await getAssistantResponse({
+        query: formData.userMessage,
+      }).unwrap();
+      dispatch(addMessageToChatId({ message: response, chatId: newChatId }));
+
       navigate(`/chat/${newChatId}`, {
         replace: true,
         preventScrollReset: true,
@@ -58,6 +66,10 @@ const Chat = () => {
       );
       dispatch(addMessageToChatId({ message: newMessage, chatId }));
       setFormData(defaultFormData);
+      const response = await getAssistantResponse({
+        query: formData.userMessage,
+      }).unwrap();
+      dispatch(addMessageToChatId({ message: response, chatId }));
     }
   };
 
@@ -115,6 +127,7 @@ const Chat = () => {
                 )}
               </React.Fragment>
             ))}
+          {isLoading ? <Loader /> : null}
         </div>
         {showDownArrow && (
           <div>
