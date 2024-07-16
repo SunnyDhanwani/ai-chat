@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { clearGlobalItem, setGlobalItem } from "../../../utils/helper";
 import { Chat, ChatMessage } from "../../../types/types";
-import { v4 as uuid } from "uuid";
+import { Like } from "../../../types/enum";
 
 interface ChatState {
   data: Chat[];
@@ -33,8 +32,25 @@ const ChatSlice = createSlice({
         };
       }
     },
+
+    updateLikeOfMessage: (
+      state: ChatState,
+      {
+        payload: { messageId, chatId, like },
+      }: PayloadAction<{ messageId: string; chatId: string; like: Like | null }>
+    ) => {
+      const chatIndex = state.data.findIndex((el) => el.id === chatId);
+      if (chatIndex === -1) return;
+
+      const messageIndex = state.data[chatIndex].messages.findIndex(
+        (el) => el.id === messageId
+      );
+      if (messageIndex === -1) return;
+      
+      state.data[chatIndex].messages[messageIndex].like = like;
+    },
   },
 });
 
-export const { addMessageToChatId } = ChatSlice.actions;
+export const { addMessageToChatId, updateLikeOfMessage } = ChatSlice.actions;
 export default ChatSlice.reducer;

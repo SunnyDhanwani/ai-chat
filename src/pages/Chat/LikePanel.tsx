@@ -6,23 +6,29 @@ import {
   FaThumbsDown,
   FaThumbsUp,
 } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../components/store/store";
+import { updateLikeOfMessage } from "../../components/features/chat/chatSlice";
 
 interface LikeMessageProps {
   like: Like | null;
   showOnlyActiveAction?: boolean;
-  component?: string;
+  messageId: string;
+  chatId: string;
 }
 
 const LikePanel = ({
   like = null,
   showOnlyActiveAction = false,
-  component = "1",
+  messageId = "",
+  chatId = ""
 }: LikeMessageProps) => {
-  const [isLike, setIsLike] = useState(like); // State to hold the isLike
   const [hover, setHover] = useState<LikeMessageProps["like"]>(null);
+  const dispatch: AppDispatch = useDispatch();
 
-  const handleClick = (index: Like | null) => {
-    setIsLike((prev) => (prev === index ? null : index)); // Set the isLike based on the star clicked
+  const handleClick = (index: Like | null) => {    
+    const updatedLike = like === index ? null : index;
+    dispatch(updateLikeOfMessage({chatId, messageId, like: updatedLike}))
   };
 
   const handleMouseEnter = (index: Like) => {
@@ -31,21 +37,21 @@ const LikePanel = ({
 
   const handleMouseLeave = () => {
     setHover(null); // Reset the hover state when the mouse leaves
-  };
+  };  
 
   return (
     <div className={`flex gap-2 p-2 bg-gray-200/0 rounded-md`}>
       {showOnlyActiveAction ? (
-        isLike === null ? (
+        like === null ? (
           <></>
-        ) : isLike === Like.LIKE ? (
+        ) : like === Like.LIKE ? (
           <FaThumbsUp className="cursor-pointer" />
         ) : (
           <FaThumbsDown className="cursor-pointer" />
         )
       ) : (
         <>
-          {(isLike === Like.LIKE && hover === null) || hover === Like.LIKE ? (
+          {(like === Like.LIKE && hover === null) || hover === Like.LIKE ? (
             <FaThumbsUp
               className="cursor-pointer"
               onMouseLeave={handleMouseLeave}
@@ -59,7 +65,7 @@ const LikePanel = ({
               onClick={() => handleClick(Like.LIKE)}
             />
           )}{" "}
-          {(isLike === Like.DISLIKE && hover === null) ||
+          {(like === Like.DISLIKE && hover === null) ||
           hover === Like.DISLIKE ? (
             <FaThumbsDown
               className="cursor-pointer"

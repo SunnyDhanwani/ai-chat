@@ -7,8 +7,8 @@ interface SenderMessageProps {
   messageJSON: JSONContent;
 }
 
-const SenderMessage = ({ message, messageJSON }: SenderMessageProps) => {
-  const __html = generateHTMLFromJSON(messageJSON);
+const SenderMessage = ({ messageJSON }: SenderMessageProps) => {
+  const __html = generateHTMLFromJSON(messageJSON);  
 
   return (
     <div

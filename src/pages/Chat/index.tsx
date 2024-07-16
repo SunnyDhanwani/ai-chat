@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "../../components/store/store";
 import React, {
   ChangeEvent,
   FormEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -36,15 +37,21 @@ const Chat = () => {
   const [getAssistantResponse, { isLoading }] =
     useGetAssistantResponseMutation();
 
-  const handleSendMessageAPI = async (
-    userMessageJSON: JSONContent | undefined
+  const handleSendEditorMessage = async (
+    editor: Editor | null,
+    currentChatId: string
   ) => {
-    if (!userMessageJSON?.content) return;
+    const userMessageJSON: JSONContent | undefined = editor?.getJSON();
 
-    if (!userMessageJSON || !generateTextFromJSON(userMessageJSON) || isLoading)
+    if (
+      !userMessageJSON ||
+      !userMessageJSON?.content ||
+      !generateTextFromJSON(userMessageJSON) ||
+      isLoading
+    )
       return;
 
-    const chatId = pathParams.chatId;
+    const chatId = currentChatId || pathParams.chatId;
 
     if (!chatId) {
       const newChatId = uuid();
@@ -67,10 +74,6 @@ const Chat = () => {
       }).unwrap();
       dispatch(addMessageToChatId({ message: response, chatId }));
     }
-  };
-
-  const handleSendEditorMessage = (editor: Editor | null) => {
-    handleSendMessageAPI(editor?.getJSON());
   };
 
   const scrollToBottom = () => {
@@ -109,6 +112,8 @@ const Chat = () => {
     }
   }, []);
 
+  const currentChat = data.find((el: ChatTopic) => el.id === pathParams.chatId);
+
   return (
     <div className="relative p-4 pr-0 h-full max-w-full flex flex-col justify-between">
       <div
@@ -116,26 +121,23 @@ const Chat = () => {
         ref={chatRef}
       >
         <div className="max-w-[50vw] mx-auto flex flex-col gap-3 pb-20">
-          {data
-            .find((el: ChatTopic) => el.id === pathParams.chatId)
-            ?.messages.map(
-              ({ id, sentBy, like, message, messageJSON }: ChatMessage) => (
-                <React.Fragment key={id}>
-                  {sentBy === User.AI ? (
-                    <ReceiverMessage
-                      like={like}
-                      message={message}
-                      messageJSON={messageJSON}
-                    />
-                  ) : (
-                    <SenderMessage
-                      message={message}
-                      messageJSON={messageJSON}
-                    />
-                  )}
-                </React.Fragment>
-              )
-            )}
+          {currentChat?.messages.map(
+            ({ id, sentBy, like, message, messageJSON }: ChatMessage) => (
+              <React.Fragment key={id}>
+                {sentBy === User.AI ? (
+                  <ReceiverMessage
+                    like={like}
+                    message={message}
+                    messageJSON={messageJSON}
+                    messageId={id}
+                    chatId={currentChat.id}
+                  />
+                ) : (
+                  <SenderMessage message={message} messageJSON={messageJSON} />
+                )}
+              </React.Fragment>
+            )
+          )}
           {isLoading ? <Loader /> : null}
         </div>
         {showDownArrow && (
@@ -157,7 +159,7 @@ const Chat = () => {
             <button
               type="submit"
               onClick={() => {}}
-              className="absolute bottom-2 right-2"
+              className="absolute bottom-1/2 translate-y-1/2 right-2"
             >
               <img
                 className="rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200"

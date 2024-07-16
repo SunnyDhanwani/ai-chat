@@ -8,9 +8,13 @@ interface ReceiverMessageProps {
   like: Like | null;
   message: string;
   messageJSON: JSONContent;
+  messageId: string;
+  chatId: string;
 }
 
 const ReceiverMessage = ({
+  chatId = "",
+  messageId = "",
   like = null,
   message = "",
   messageJSON = {},
@@ -38,11 +42,11 @@ const ReceiverMessage = ({
       ></div>
       {showActionButtons ? (
         <div className="absolute -top-1 left-2">
-          <LikePanel like={Like.LIKE} />
+          <LikePanel like={like} chatId={chatId} messageId={messageId} />
         </div>
       ) : like !== null ? (
         <div className="absolute -top-1 left-2">
-          <LikePanel like={Like.DISLIKE} showOnlyActiveAction={true} />
+          <LikePanel like={like} chatId={chatId} messageId={messageId} showOnlyActiveAction={true} />
         </div>
       ) : null}
     </div>

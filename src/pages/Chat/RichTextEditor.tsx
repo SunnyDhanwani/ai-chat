@@ -9,27 +9,32 @@ import {
   useEditor,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 
 const RichTextEditor = ({
   handleSubmit,
 }: {
-  handleSubmit: (data: Editor | null) => void;
+  handleSubmit: (data: Editor | null, chatId: string) => void;
 }) => {
+  const pathParams = useParams();
+  const chatId = useRef<string>(pathParams.chatId || "");
+
   const CustomExtension = Extension.create({
     addKeyboardShortcuts() {
       return {
-        "Cmd-Enter": () => {
+        "Enter": () => {          
           // Handle Cmd-Enter shortcut
-          handleSubmit(editor);
+          handleSubmit(editor, chatId.current || "");
           editor?.chain().clearContent().run();
           return true;
         },
-        "Ctrl-Enter": () => {
-          // Handle Ctrl-Enter shortcut
-          handleSubmit(editor);
-          editor?.chain().clearContent().run();
-          return true;
-        },
+        // "Ctrl-Enter": () => {
+        //   // Handle Ctrl-Enter shortcut
+        //   handleSubmit(editor, chatId.current || "");
+        //   editor?.chain().clearContent().run();
+        //   return true;
+        // },
       };
     },
   });
@@ -43,6 +48,12 @@ const RichTextEditor = ({
       CustomExtension,
     ],
   });
+
+  useEffect(() => {
+    if (editor) {
+      chatId.current = pathParams.chatId || "";
+    }
+  }, [pathParams.chatId, editor]);
 
   return (
     <div className="w-full">
