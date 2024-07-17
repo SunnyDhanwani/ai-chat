@@ -57,3 +57,10 @@ Make sure you have Node.js installed on your machine.
     ```bash
     npm run start
     ```
+
+5. Authentication credentials
+
+    ```bash
+    email: johndoe@gmail.com
+    password: 12345678
+    ```
