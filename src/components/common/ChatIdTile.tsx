@@ -7,12 +7,14 @@ interface ChatIdTileProps {
   id: string;
   initialMessage: string;
   isNewChatTile?: boolean;
+  isChatEmpty?: boolean;
 }
 
 const ChatIdTile = ({
   id = "",
   initialMessage = "",
   isNewChatTile = false,
+  isChatEmpty = false,
 }: ChatIdTileProps) => {
   const navigate = useNavigate();
   const pathParams = useParams();
@@ -23,7 +25,7 @@ const ChatIdTile = ({
       chatId = uuid();
     }
 
-    if (pathParams.chatId !== chatId) navigate(`/chat/${chatId}`);
+    if (pathParams.chatId !== chatId) navigate(`/chat/${chatId}`, {replace: isChatEmpty});
   };
   return (
     <div

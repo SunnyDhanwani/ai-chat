@@ -8,31 +8,26 @@ import {
   useEditor,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { v4 as uuid } from "uuid";
 import {
+  generateJSONFromText,
   generateTextFromJSON,
   messageTemplateFormatter,
 } from "../../utils/helper";
 import { User } from "../../types/enum";
 import {
+  addFeedback,
   addMessageToChatId,
-  markEndOfConversation,
 } from "../../components/features/chat/chatSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../components/store/store";
-import { Chat } from "../../types/types";
-import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../components/store/store";
+import { FEEDBACK_REPLY_MESSAGES } from "../../utils/contants";
 
-const RichTextEditor = () => {
+const FeedbackEditor = () => {
   const pathParams = useParams();
-  const navigate = useNavigate();
   const chatId = useRef<string>(pathParams.chatId || "");
   const dispatch: AppDispatch = useDispatch();
-  const { data } = useSelector((state: RootState) => state.chat);
-  const [getAssistantResponse, { isLoading }] =
-    useGetAssistantResponseMutation();
 
   const CustomExtension = Extension.create({
     addKeyboardShortcuts() {
@@ -50,7 +45,7 @@ const RichTextEditor = () => {
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: "Message SentiSum GPT",
+        placeholder: "Enter your feedback",
       }),
       CustomExtension,
     ],
@@ -62,77 +57,36 @@ const RichTextEditor = () => {
     }
   }, [pathParams.chatId, editor]);
 
-  const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);
-
-  const handleEndChat = () => {
-
-    if (isLoading) return;
-
-    const emptyJSON: JSONContent = {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            {
-              type: "text",
-              text: "Session's over! Share your rating and feedback with us!",
-            },
-          ],
-        },
-      ],
-    };
-    const newMessage = messageTemplateFormatter(emptyJSON, User.AI, true);
-    dispatch(
-      addMessageToChatId({
-        message: newMessage,
-        chatId: chatId.current || "",
-      })
-    );
-
-    dispatch(markEndOfConversation({ chatId: chatId.current }));
-  };
-
   const handleSendEditorMessage = async () => {
     const userMessageJSON: JSONContent | undefined = editor?.getJSON();
+    const userMessageText: string = editor?.getText() || "";
 
     if (
       !userMessageJSON ||
       !userMessageJSON?.content ||
-      !generateTextFromJSON(userMessageJSON) ||
-      isLoading
+      !generateTextFromJSON(userMessageJSON)
     )
       return;
 
     editor?.chain().clearContent().run();
 
-    const currentChatId = chatId.current || pathParams.chatId;
+    const currentChatId = chatId.current || pathParams.chatId || "";
 
-    if (!currentChatId) {
-      const newChatId = uuid();
-      const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
-      dispatch(addMessageToChatId({ message: newMessage, chatId: newChatId }));
-      const response = await getAssistantResponse({
-        query: userMessageJSON,
-      }).unwrap();
-      dispatch(addMessageToChatId({ message: response, chatId: newChatId }));
+    const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
+    dispatch(
+      addMessageToChatId({ message: newMessage, chatId: currentChatId })
+    );
+    dispatch(addFeedback({ chatId: currentChatId, feedback: userMessageText }));
 
-      navigate(`/chat/${newChatId}`, {
-        replace: true,
-        preventScrollReset: true,
-      });
-    } else {
-      const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
-      dispatch(
-        addMessageToChatId({ message: newMessage, chatId: currentChatId })
-      );
-      const response = await getAssistantResponse({
-        query: userMessageJSON,
-      }).unwrap();
-      dispatch(
-        addMessageToChatId({ message: response, chatId: currentChatId })
-      );
-    }
+    // setTimeout(() => {
+    const feedbackReplyJSON = generateJSONFromText(
+      FEEDBACK_REPLY_MESSAGES[Math.floor(Math.random() * 10) + 1]
+    );
+    const feedbackReply = messageTemplateFormatter(feedbackReplyJSON, User.AI);
+    dispatch(
+      addMessageToChatId({ message: feedbackReply, chatId: currentChatId })
+    );
+    // }, 1000);
   };
 
   return (
@@ -195,16 +149,8 @@ const RichTextEditor = () => {
           />
         </button>
       </form>
-      <button
-        className={`w-max shrink-0 bg-gray-400 hover:bg-gray-500 p-3 rounded-md h-fit ${
-          currentChat?.messages ? "" : "hidden"
-        }`}
-        onClick={() => handleEndChat()}
-      >
-        <strong>End chat</strong>
-      </button>
     </>
   );
 };
 
-export default RichTextEditor;
+export default FeedbackEditor;

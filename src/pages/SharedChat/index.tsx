@@ -1,24 +1,9 @@
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../components/store/store";
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Chat as ChatTopic, ChatMessage, Chat } from "../../types/types";
+import { useParams, useSearchParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Chat as ChatTopic, ChatMessage } from "../../types/types";
 import { User } from "../../types/enum";
 import { decryptText, round5 } from "../../utils/helper";
 import { debounce } from "lodash";
-import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
 import { EMPTY_STATE_MESSAGES } from "../../utils/contants";
 import { FaShareAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -28,10 +13,13 @@ import SenderMessage from "../Chat/SenderMessage";
 const SharedChat = () => {
   const pathParams = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const navigate = useNavigate();
-  const dispatch: AppDispatch = useDispatch();
-  const [data, setData] = useState<ChatTopic>({ id: "", messages: [] });
+  const [data, setData] = useState<ChatTopic>({
+    id: "",
+    conversationEnded: true,
+    messages: [],
+    feedback: "",
+    rating: -1,
+  });
   const chatRef = useRef<HTMLDivElement>(null);
   const [showDownArrow, setShowDownArrow] = useState(false);
 

@@ -18,10 +18,14 @@ export interface ChatMessage {
   messageJSON: JSONContent,
   timestamp: number;
   like: Like | null;
-  sentBy: User
+  sentBy: User;
+  rating?: number;
 }
 
 export interface Chat {
   id: string;
+  conversationEnded: boolean;
+  feedback: string;
+  rating: number;
   messages: ChatMessage[];
 }

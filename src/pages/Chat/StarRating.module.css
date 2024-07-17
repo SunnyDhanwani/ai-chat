@@ -2,12 +2,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 4px;
 }
 
 .star {
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 2rem;
   cursor: pointer;
   color: lightgray;
   transition: color 0.2s;

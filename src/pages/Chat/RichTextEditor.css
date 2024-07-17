@@ -1,5 +1,5 @@
 .ProseMirror {
-  @apply w-full grow-0 py-3 px-4 rounded-md shadow-lg focus:shadow-xl bg-slate-400/30 outline-none focus:outline focus:outline-gray-200 border-none pr-12 whitespace-pre-wrap placeholder:text-black;
+  @apply w-full grow-0 py-3 px-4 rounded-md focus:drop-shadow-lg focus:shadow-blue-400 bg-slate-400/30 outline-none focus:outline focus:outline-gray-200 border-none pr-12 whitespace-pre-wrap placeholder:text-black;
 }
 
 /* Basic editor styles */

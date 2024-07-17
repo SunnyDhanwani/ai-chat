@@ -38,16 +38,20 @@ export const clearGlobalItem = () => {
   }
 };
 
-export const messageTemplateFormatter = (json: JSONContent, sentBy: User) => {
-  const message: ChatMessage = {
+export const messageTemplateFormatter = (
+  json: JSONContent,
+  sentBy: User,
+  isConversationEnded?: boolean
+) => {
+  let message: ChatMessage = {
     id: uuid(),
     like: null,
     message: generateTextFromJSON(json),
     messageJSON: json,
     sentBy,
     timestamp: Date.now(),
+    rating: isConversationEnded ? 0 : -1,
   };
-
   return message;
 };
 
@@ -109,14 +113,14 @@ export function generateTextFromJSON(json: JSONContent | undefined): string {
   }
 }
 
-export const encryptText = (text:any):string => {
+export const encryptText = (text: any): string => {
   const encrypted = CryptoJS.AES.encrypt(text, ENCRYPTION_KEY, { iv: IV });
   return encodeURIComponent(encrypted.toString());
 };
 
 export const decryptText = (ciphertext: string): any => {
   const decodedText = decodeURIComponent(ciphertext);
-  const bytes = CryptoJS.AES.decrypt(decodedText, ENCRYPTION_KEY, { iv: IV });  
-  const originalText = bytes.toString(CryptoJS.enc.Utf8);  
-  return originalText
+  const bytes = CryptoJS.AES.decrypt(decodedText, ENCRYPTION_KEY, { iv: IV });
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText;
 };
