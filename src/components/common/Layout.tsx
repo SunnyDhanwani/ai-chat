@@ -40,7 +40,7 @@ const Layout = () => {
   return (
     <div className="flex w-screen">
       <nav className="bg-gray-100 w-[280px] shrink-0 h-screen flex flex-col justify-between border-r-[1px] border-gray-300">
-        <div className="max-h-full">
+        <div className="max-h-full h-full">
           <div className="p-4">
             <ChatIdTile
               id={"NEW_CHAT"}
@@ -52,8 +52,8 @@ const Layout = () => {
               }
             />
           </div>
-          <div className="max-h-[calc(100vh-72px-124px)] break-words px-4 py-1 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
-            {data.map((el) => (
+          <div className="h-full max-h-[calc(100vh-72px-124px)] break-words px-4 py-1 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse justify-end gap-2">
+            {data && data.map((el) => (
               <ChatIdTile id={el.id} initialMessage={el.messages[0].message} />
             ))}
           </div>
