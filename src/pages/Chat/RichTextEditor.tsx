@@ -71,10 +71,10 @@ const RichTextEditor = ({
     }
   }, [pathParams.chatId, editor]);
 
-  const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);
+  const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);  
 
-  const handleEndChat = () => {
-    if (isLoading || loading) return;
+  const handleEndChat = () => {    
+    if (isLoading) return;
 
     const emptyJSON: JSONContent = {
       type: "doc",
@@ -110,8 +110,7 @@ const RichTextEditor = ({
       !userMessageJSON?.content ||
       !generateTextFromJSON(userMessageJSON) ||
       userMessageText?.trim().length === 0 ||
-      isLoading ||
-      loading
+      isLoading
     )
       return;
 
@@ -200,7 +199,7 @@ const RichTextEditor = ({
 
         <button
           type="submit"
-          disabled={isLoading || loading || (editor?.getText()?.trim() === "")}
+          disabled={isLoading || (editor?.getText()?.trim() === "")}
           className="absolute bottom-1/2 translate-y-1/2 right-2 rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200 p-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400"
         >
           <FaArrowUp />
