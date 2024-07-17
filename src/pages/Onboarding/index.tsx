@@ -38,7 +38,7 @@ const Onboarding: React.FC = () => {
     try {
       const res = await loginUser({ email, password }).unwrap();
       toast.success("User is successfully logged in");
-      dispatch(loginAction(res?.token));
+      dispatch(loginAction({ token: res.token, email: res.email }));
       context.setToken(res?.token);
     } catch (err: any) {
       toast.error(err?.data?.message);
@@ -49,7 +49,7 @@ const Onboarding: React.FC = () => {
     e.preventDefault();
 
     toast.success("User is successfully logged in as a Guest");
-    dispatch(loginAction("GUEST"));
+    dispatch(loginAction({ token: "GUEST", email: "GUEST" }));
     context.setToken("GUEST");
   };
 

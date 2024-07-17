@@ -6,12 +6,18 @@ import { RootState } from "../../components/store/store";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Chat as ChatTopic, ChatMessage } from "../../types/types";
 import { User } from "../../types/enum";
-import { encryptText, round5 } from "../../utils/helper";
+import { encryptText, getGlobalItem, round5 } from "../../utils/helper";
 import { debounce } from "lodash";
 import Loader from "./Loader";
 import RichTextEditor from "./RichTextEditor";
 import { EMPTY_STATE_MESSAGES } from "../../utils/contants";
-import { FaShareAlt } from "react-icons/fa";
+import {
+  FaAcquisitionsIncorporated,
+  FaAngry,
+  FaArrowDown,
+  FaExclamationTriangle,
+  FaShareAlt,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
 import FeedbackEditor from "./FeedbackEditor";
@@ -23,6 +29,8 @@ const Chat = () => {
   const [showDownArrow, setShowDownArrow] = useState(false);
   const [getAssistantResponse, { isLoading }] =
     useGetAssistantResponseMutation();
+  const [loading, setLoading] = useState(false);
+  const guestLogin = getGlobalItem("authToken") === "GUEST";
 
   const scrollToBottom = () => {
     if (chatRef.current) {
@@ -59,6 +67,15 @@ const Chat = () => {
   const currentChat = data.find((el: ChatTopic) => el.id === pathParams.chatId);
 
   const handleShareChat = () => {
+    if (getGlobalItem("authToken") === "GUEST") {
+      toast.error(
+        `Oops! It looks like sharing chats isn't available for guest users.`
+      );
+      return;
+    } else if (!currentChat?.messages) {
+      return;
+    }
+
     const json = JSON.stringify(currentChat);
     const encrypt = encryptText(json);
     const sharedURL =
@@ -66,7 +83,7 @@ const Chat = () => {
 
     if (sharedURL.length < 2023) {
       navigator.clipboard.writeText(sharedURL).then(() => {
-        toast.success(`URL Copied ${sharedURL.length}`);
+        toast.success(`URL Copied`);
       });
     } else {
       toast.error(
@@ -79,6 +96,10 @@ const Chat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [currentChat?.messages?.length, pathParams.chatId]);
+
+  const handleLoading = (value: boolean) => {
+    setLoading(value);
+  };
 
   const renderEditor = useCallback(() => {
     return (
@@ -94,7 +115,7 @@ const Chat = () => {
         ) : (
           <div className="max-w-[50vw] w-full mx-auto pr-4">
             <div className="flex min-w-full gap-4 items-end">
-              <RichTextEditor />
+              <RichTextEditor loading={loading} handleLoading={handleLoading} />
             </div>
           </div>
         )}
@@ -110,6 +131,12 @@ const Chat = () => {
       >
         <FaShareAlt />
       </button>
+
+      {guestLogin && (
+        <button className="bg-blue-300/50 hover:bg-blue-300 rounded-md absolute p-3 text-white transition-all duration-300 right-4 flex items-center gap-2 text-sm font-bold cursor-default">
+          <FaExclamationTriangle /> <span>Temporary chat</span>
+        </button>
+      )}
       <div
         className="h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black"
         ref={chatRef}
@@ -149,16 +176,19 @@ const Chat = () => {
               &#9729; {EMPTY_STATE_MESSAGES[Math.floor(Math.random() * 10) + 1]}
             </div>
           )}
-          {isLoading ? <Loader /> : null}
+          {isLoading || loading ? (
+            <div className="pt-5 pb-10">
+              {" "}
+              <Loader />{" "}
+            </div>
+          ) : null}
         </div>
         {showDownArrow && (
-          <div>
-            <img
-              className="absolute rotate-180 bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer duration-200 scale-75 transition-opacity"
-              src="/icons/send-arrow.svg"
-              alt="Scroll to bottom"
-              onClick={() => scrollToBottom()}
-            />
+          <div
+            onClick={() => scrollToBottom()}
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer duration-200 scale-75 transition-opacity p-2 border border-black"
+          >
+            <FaArrowDown />
           </div>
         )}
       </div>

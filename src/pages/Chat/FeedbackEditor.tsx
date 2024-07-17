@@ -23,6 +23,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../components/store/store";
 import { FEEDBACK_REPLY_MESSAGES } from "../../utils/contants";
+import { FaArrowUp } from "react-icons/fa";
 
 const FeedbackEditor = () => {
   const pathParams = useParams();
@@ -140,13 +141,9 @@ const FeedbackEditor = () => {
 
         <button
           type="submit"
-          className="absolute bottom-1/2 translate-y-1/2 right-2"
+          className="absolute bottom-1/2 translate-y-1/2 right-2 rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200 p-2"
         >
-          <img
-            className="rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200"
-            src="/icons/send-arrow.svg"
-            alt="Send message"
-          />
+          <FaArrowUp />
         </button>
       </form>
     </>

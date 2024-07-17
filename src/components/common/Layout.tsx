@@ -4,36 +4,59 @@ import { AppDispatch, RootState } from "../store/store";
 import { logout } from "../features/auth/authSlice";
 import ChatIdTile from "./ChatIdTile";
 import { Chat } from "../../types/types";
+import { useEffect } from "react";
+import { clearAllGlobalItems, getGlobalItem } from "../../utils/helper";
 
 const Layout = () => {
   const context: any = useOutletContext();
   const dispatch = useDispatch<AppDispatch>();
   const { data } = useSelector((state: RootState) => state.chat);
+  const { email } = useSelector((state: RootState) => state.auth);
   const pathParams = useParams();
 
   const handleLogout = () => {
     dispatch(logout());
     context.setToken("");
-  };
+  };  
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const authToken = getGlobalItem("authToken");
+
+      if (authToken === "GUEST") {
+        clearAllGlobalItems();
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <div className="flex w-screen">
       <nav className="bg-gray-100 w-[280px] shrink-0 h-screen flex flex-col justify-between border-r-[1px] border-gray-300">
-        <div className="">
+        <div className="max-h-full">
           <div className="p-4">
             <ChatIdTile
               id={"NEW_CHAT"}
               initialMessage={"New Chat"}
               isNewChatTile={true}
-              isChatEmpty={data.find((el: Chat) => el.id === pathParams?.chatId)?.messages.length === 0}
+              isChatEmpty={
+                data.find((el: Chat) => el.id === pathParams?.chatId)?.messages
+                  .length === 0
+              }
             />
           </div>
-          <div className="max-h-full break-words px-4 py-1 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
+          <div className="max-h-[calc(100vh-72px-124px)] break-words px-4 py-1 overflow-y-auto overflow-x-clip custom-scrollbar flex flex-col-reverse gap-2">
             {data.map((el) => (
               <ChatIdTile id={el.id} initialMessage={el.messages[0].message} />
             ))}
           </div>
-        </div>
         <div className="p-4">
           <button
             className="py-2 px-5 bg-blue-500 hover:bg-blue-600 text-white rounded-md w-full mt-full"
@@ -41,6 +64,12 @@ const Layout = () => {
           >
             <strong>Logout</strong>
           </button>
+          <button
+            className="mt-3 py-2 px-5 bg-gray-500 cursor-default text-white rounded-md w-full mt-full"
+          >
+            <strong className="ellipsis line-clamp-1">{email}</strong>
+          </button>
+        </div>
         </div>
       </nav>
 

@@ -5,7 +5,7 @@ import { User } from "../../types/enum";
 import { decryptText, round5 } from "../../utils/helper";
 import { debounce } from "lodash";
 import { EMPTY_STATE_MESSAGES } from "../../utils/contants";
-import { FaShareAlt } from "react-icons/fa";
+import { FaArrowDown, FaShareAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import ReceiverMessage from "../Chat/ReceiverMessage";
 import SenderMessage from "../Chat/SenderMessage";
@@ -67,7 +67,7 @@ const SharedChat = () => {
     const sharedURL = window.location.href;
 
     navigator.clipboard.writeText(sharedURL).then(() => {
-      toast.success(`URL Copied ${sharedURL.length}`);
+      toast.success(`URL Copied`);
     });
   };
 
@@ -114,22 +114,18 @@ const SharedChat = () => {
               &#9729; {EMPTY_STATE_MESSAGES[Math.floor(Math.random() * 10) + 1]}
             </div>
           )}
-          {/* {isLoading ? <Loader /> : null} */}
         </div>
         {showDownArrow && (
-          <div>
-            <img
-              className="absolute rotate-180 bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer duration-200 scale-75 transition-opacity"
-              src="/icons/send-arrow.svg"
-              alt="Scroll to bottom"
-              onClick={() => scrollToBottom()}
-            />
+          <div
+            onClick={() => scrollToBottom()}
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-gray-300 hover:bg-gray-400 cursor-pointer duration-200 scale-75 transition-opacity p-2 border border-black"
+          >
+            <FaArrowDown />
           </div>
         )}
       </div>
       <button
         className="w-max shrink-0 bg-gray-400 hover:bg-gray-500 p-3 rounded-md h-fit mx-auto mt-auto"
-        // onClick={() => handleEndChat()}
       >
         <strong>Shared Chat</strong>
       </button>

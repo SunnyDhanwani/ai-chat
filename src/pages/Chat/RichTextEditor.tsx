@@ -24,8 +24,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../components/store/store";
 import { Chat } from "../../types/types";
 import { useGetAssistantResponseMutation } from "../../components/features/chat/chatApi";
+import { FaArrowUp } from "react-icons/fa";
 
-const RichTextEditor = () => {
+interface RichTextEditorProps {
+  handleLoading: (value: boolean) => void;
+  loading: boolean;
+}
+
+const RichTextEditor = ({
+  handleLoading,
+  loading = false,
+}: RichTextEditorProps) => {
   const pathParams = useParams();
   const navigate = useNavigate();
   const chatId = useRef<string>(pathParams.chatId || "");
@@ -65,8 +74,7 @@ const RichTextEditor = () => {
   const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);
 
   const handleEndChat = () => {
-
-    if (isLoading) return;
+    if (isLoading || loading) return;
 
     const emptyJSON: JSONContent = {
       type: "doc",
@@ -95,16 +103,20 @@ const RichTextEditor = () => {
 
   const handleSendEditorMessage = async () => {
     const userMessageJSON: JSONContent | undefined = editor?.getJSON();
+    const userMessageText: string | undefined = editor?.getText() || "";
 
     if (
       !userMessageJSON ||
       !userMessageJSON?.content ||
       !generateTextFromJSON(userMessageJSON) ||
-      isLoading
+      userMessageText?.trim().length === 0 ||
+      isLoading ||
+      loading
     )
       return;
 
     editor?.chain().clearContent().run();
+    handleLoading(true);
 
     const currentChatId = chatId.current || pathParams.chatId;
 
@@ -121,6 +133,7 @@ const RichTextEditor = () => {
         replace: true,
         preventScrollReset: true,
       });
+      handleLoading(false);
     } else {
       const newMessage = messageTemplateFormatter(userMessageJSON, User.USER);
       dispatch(
@@ -132,6 +145,7 @@ const RichTextEditor = () => {
       dispatch(
         addMessageToChatId({ message: response, chatId: currentChatId })
       );
+      handleLoading(false);
     }
   };
 
@@ -186,13 +200,10 @@ const RichTextEditor = () => {
 
         <button
           type="submit"
-          className="absolute bottom-1/2 translate-y-1/2 right-2"
+          disabled={isLoading || loading || (editor?.getText()?.trim() === "")}
+          className="absolute bottom-1/2 translate-y-1/2 right-2 rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200 p-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400"
         >
-          <img
-            className="rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200"
-            src="/icons/send-arrow.svg"
-            alt="Send message"
-          />
+          <FaArrowUp />
         </button>
       </form>
       <button

@@ -32,7 +32,7 @@ export const setGlobalItem = (key: any, value: any) => {
   }
 };
 
-export const clearGlobalItem = () => {
+export const clearAllGlobalItems = () => {
   if (typeof window !== "undefined") {
     localStorage.clear();
   }
