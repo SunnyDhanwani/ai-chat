@@ -9,6 +9,8 @@ import {
   JSONContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import CryptoJS from "crypto-js";
+import { ENCRYPTION_KEY, IV } from "./contants";
 
 export const getGlobalItem = (key: string) => {
   if (typeof window !== "undefined") {
@@ -106,3 +108,15 @@ export function generateTextFromJSON(json: JSONContent | undefined): string {
     return "";
   }
 }
+
+export const encryptText = (text:any):string => {
+  const encrypted = CryptoJS.AES.encrypt(text, ENCRYPTION_KEY, { iv: IV });
+  return encodeURIComponent(encrypted.toString());
+};
+
+export const decryptText = (ciphertext: string): any => {
+  const decodedText = decodeURIComponent(ciphertext);
+  const bytes = CryptoJS.AES.decrypt(decodedText, ENCRYPTION_KEY, { iv: IV });  
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);  
+  return originalText
+};

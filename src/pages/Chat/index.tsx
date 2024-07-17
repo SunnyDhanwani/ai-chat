@@ -1,6 +1,6 @@
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../components/store/store";
 import React, {
@@ -16,6 +16,8 @@ import { v4 as uuid } from "uuid";
 import { User } from "../../types/enum";
 import { addMessageToChatId } from "../../components/features/chat/chatSlice";
 import {
+  decryptText,
+  encryptText,
   generateHTMLFromJSON,
   generateTextFromJSON,
   messageTemplateFormatter,
@@ -26,10 +28,14 @@ import { useGetAssistantResponseMutation } from "../../components/features/chat/
 import Loader from "./Loader";
 import RichTextEditor from "./RichTextEditor";
 import { Editor, JSONContent } from "@tiptap/react";
+import { EMPTY_STATE_MESSAGES } from "../../utils/contants";
+import { FaShare, FaShareAlt, FaShareAltSquare } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Chat = () => {
   const pathParams = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch: AppDispatch = useDispatch();
   const { data } = useSelector((state: RootState) => state.chat);
   const chatRef = useRef<HTMLDivElement>(null);
@@ -87,10 +93,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [data, pathParams.chatId]);
-
-  useEffect(() => {
     const chatElement = chatRef.current;
 
     if (chatElement) {
@@ -114,29 +116,67 @@ const Chat = () => {
 
   const currentChat = data.find((el: ChatTopic) => el.id === pathParams.chatId);
 
+  const handleEndChat = () => {
+    const json = JSON.stringify(currentChat);
+    const encrypt = encryptText(json);
+  };
+
+  const handleShareChat = () => {
+    const json = JSON.stringify(currentChat);
+    const encrypt = encryptText(json);
+    const sharedURL = window.location.origin + "/shared-chat?conversation=" + encrypt;    
+
+    if (sharedURL.length < 2023) {
+      navigator.clipboard.writeText(sharedURL).then(() => {
+        toast.success(`URL Copied ${sharedURL.length}`);
+      });
+    } else {
+      toast.error(`This chat is too lengthy to share due to frontend restrictions. Please keep it short.`, {autoClose: 10000});
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentChat?.messages?.length, pathParams.chatId]);
+
   return (
     <div className="relative p-4 pr-0 h-full max-w-full flex flex-col justify-between">
+      <button
+        className="bg-blue-500/50 hover:bg-blue-500 rounded-md absolute p-3 text-white transition-all duration-300"
+        onClick={() => handleShareChat()}
+      >
+        <FaShareAlt />
+      </button>
       <div
-        className="max-h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black"
+        className="h-full pr-4 mb-4 overflow-x-clip overflow-y-auto custom-scrollbar break-all text-black"
         ref={chatRef}
       >
-        <div className="max-w-[50vw] mx-auto flex flex-col gap-3 pb-20">
-          {currentChat?.messages.map(
-            ({ id, sentBy, like, message, messageJSON }: ChatMessage) => (
-              <React.Fragment key={id}>
-                {sentBy === User.AI ? (
-                  <ReceiverMessage
-                    like={like}
-                    message={message}
-                    messageJSON={messageJSON}
-                    messageId={id}
-                    chatId={currentChat.id}
-                  />
-                ) : (
-                  <SenderMessage message={message} messageJSON={messageJSON} />
-                )}
-              </React.Fragment>
+        <div className="max-w-[50vw] mx-auto flex flex-col gap-3 pb-20 h-full">
+          {currentChat?.messages && currentChat?.messages.length > 0 ? (
+            currentChat?.messages.map(
+              ({ id, sentBy, like, message, messageJSON }: ChatMessage) => (
+                <React.Fragment key={id}>
+                  {sentBy === User.AI ? (
+                    <ReceiverMessage
+                      like={like}
+                      message={message}
+                      messageJSON={messageJSON}
+                      messageId={id}
+                      chatId={currentChat.id}
+                    />
+                  ) : (
+                    <SenderMessage
+                      message={message}
+                      messageJSON={messageJSON}
+                    />
+                  )}
+                </React.Fragment>
+              )
             )
+          ) : (
+            <div className="h-full w-full flex items-center justify-center pt-20">
+              &#9729; {EMPTY_STATE_MESSAGES[Math.floor(Math.random() * 10) + 1]}
+            </div>
           )}
           {isLoading ? <Loader /> : null}
         </div>
@@ -168,7 +208,10 @@ const Chat = () => {
               />
             </button>
           </form>
-          <button className="w-max shrink-0 bg-gray-400 hover:bg-gray-500 px-3 py-2 rounded-md h-fit">
+          <button
+            className="w-max shrink-0 bg-gray-400 hover:bg-gray-500 p-3 rounded-md h-fit"
+            onClick={() => handleEndChat()}
+          >
             <strong>End chat</strong>
           </button>
         </div>

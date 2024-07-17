@@ -5,6 +5,7 @@ import PageNotFound from "../pages/PageNotFound";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import Root from "../pages/Root";
 import Chat from "../pages/Chat";
+import SharedChat from "../pages/SharedChat";
 
 const router = createBrowserRouter([
   {
@@ -26,9 +27,12 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/shared-chat",
+        element: <SharedChat />,
+      },
     ],
   },
-
   { path: "*", element: <PageNotFound /> },
 ]);
 
