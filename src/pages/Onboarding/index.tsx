@@ -6,6 +6,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLoginUserMutation } from "../../components/features/auth/authApi";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { resetChat } from "../../components/features/chat/chatSlice";
 
 const Onboarding: React.FC = () => {
   const [email, setEmail] = useState(`${process.env.REACT_APP_DUMMY_EMAIL}`);
@@ -47,6 +48,7 @@ const Onboarding: React.FC = () => {
 
   const handleGuestLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(resetChat());
 
     toast.success("User is successfully logged in as a Guest");
     dispatch(loginAction({ token: "GUEST", email: "GUEST" }));

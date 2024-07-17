@@ -42,28 +42,40 @@ const RichTextEditor = ({
   const { data } = useSelector((state: RootState) => state.chat);
   const [getAssistantResponse, { isLoading }] =
     useGetAssistantResponseMutation();
+  const isLoadingRef = useRef<boolean>(false);
 
-  const CustomExtension = Extension.create({
-    addKeyboardShortcuts() {
-      return {
-        Enter: () => {
-          // Handle Cmd-Enter shortcut
-          handleSendEditorMessage();
-          return true;
-        },
-      };
+  useEffect(() => {
+    if (loading || isLoading) {
+      isLoadingRef.current = true;
+      handleLoading(true);
+    } else {
+      isLoadingRef.current = false;
+      handleLoading(false);
+    }
+  }, [loading, isLoading])  
+
+  const editor = useEditor(
+    {
+      extensions: [
+        StarterKit,
+        Placeholder.configure({
+          placeholder: "Message SentiSum GPT",
+        }),
+        Extension.create({
+          addKeyboardShortcuts() {
+            return {
+              Enter: () => {
+                // Handle Cmd-Enter shortcut
+                handleSendEditorMessage();
+                return true;
+              },
+            };
+          },
+        }),
+      ],
     },
-  });
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: "Message SentiSum GPT",
-      }),
-      CustomExtension,
-    ],
-  });
+    [pathParams.chatId, chatId.current]
+  );
 
   useEffect(() => {
     if (editor) {
@@ -71,10 +83,10 @@ const RichTextEditor = ({
     }
   }, [pathParams.chatId, editor]);
 
-  const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);  
+  const currentChat = data.find((el: Chat) => el.id === pathParams.chatId);
 
-  const handleEndChat = () => {    
-    if (isLoading) return;
+  const handleEndChat = () => {
+    if (isLoadingRef.current) return;
 
     const emptyJSON: JSONContent = {
       type: "doc",
@@ -110,7 +122,7 @@ const RichTextEditor = ({
       !userMessageJSON?.content ||
       !generateTextFromJSON(userMessageJSON) ||
       userMessageText?.trim().length === 0 ||
-      isLoading
+      isLoadingRef.current
     )
       return;
 
@@ -199,7 +211,7 @@ const RichTextEditor = ({
 
         <button
           type="submit"
-          disabled={isLoading || (editor?.getText()?.trim() === "")}
+          disabled={isLoadingRef.current || editor?.getText()?.trim() === ""}
           className="absolute bottom-1/2 translate-y-1/2 right-2 rounded-md bg-gray-400 hover:bg-gray-500 cursor-pointer transition duration-200 p-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-gray-400"
         >
           <FaArrowUp />
