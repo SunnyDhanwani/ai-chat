@@ -73,7 +73,7 @@ const Layout = () => {
         </div>
       </nav>
 
-      <div className="bg-gray-50 dark:bg-gray-900 w-full h-screen overflow-y-auto overflow-clip custom-scrollbar">
+      <div className="bg-gray-50 w-full h-screen overflow-y-auto overflow-clip custom-scrollbar">
         <Outlet />
       </div>
     </div>
