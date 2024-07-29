@@ -104,6 +104,7 @@ const FeedbackEditor = () => {
             <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
               <div className="space-x-2 shadow-md border bg-gray-50 p-1 rounded-md">
                 <button
+                  type="button"
                   onClick={() => editor.chain().focus().toggleBold().run()}
                   className={`p-2 rounded-md ${
                     editor.isActive("bold")
@@ -114,6 +115,7 @@ const FeedbackEditor = () => {
                   Bold
                 </button>
                 <button
+                  type="button"
                   onClick={() => editor.chain().focus().toggleItalic().run()}
                   className={`p-2 rounded-md ${
                     editor.isActive("italic")
@@ -124,6 +126,7 @@ const FeedbackEditor = () => {
                   Italic
                 </button>
                 <button
+                  type="button"
                   onClick={() => editor.chain().focus().toggleStrike().run()}
                   className={`p-2 rounded-md ${
                     editor.isActive("strike")
